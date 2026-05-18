@@ -3,17 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LuxAuto AI Compare</title>
+<title>LuxAuto Pro Max</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
 <style>
 :root{
-  --bg:#07070a;
-  --card:#0f1118;
+  --bg:#07080c;
+  --panel:#0e1016;
+  --card:#121520;
   --gold:#d4af37;
   --muted:#9aa0a6;
-  --line:#1c1f2a;
+  --line:#1d2230;
 }
 
 *{box-sizing:border-box}
@@ -21,53 +22,97 @@
 body{
   margin:0;
   font-family:Inter;
-  background:radial-gradient(circle at top,#15152a,#07070a);
+  background:radial-gradient(circle at top,#15152c,#07080c);
   color:white;
 }
 
-/* HEADER */
-header{
-  text-align:center;
-  padding:30px 20px 10px;
+/* LAYOUT */
+.app{
+  display:flex;
+  min-height:100vh;
 }
 
-header h1{
-  margin:0;
-  font-size:42px;
-}
-
-header p{
-  color:var(--muted);
-}
-
-/* SELECT */
-.container{
-  max-width:1200px;
-  margin:auto;
+/* SIDEBAR */
+.sidebar{
+  width:270px;
+  background:var(--panel);
+  border-right:1px solid var(--line);
   padding:20px;
 }
 
-select{
-  width:32%;
+.logo{
+  font-size:20px;
+  font-weight:800;
+  color:var(--gold);
+  margin-bottom:25px;
+}
+
+.nav{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.nav button{
+  background:rgba(255,255,255,0.03);
+  border:1px solid var(--line);
+  color:var(--muted);
+  padding:10px;
+  border-radius:10px;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.nav button:hover{
+  border-color:var(--gold);
+  color:white;
+  transform:translateX(4px);
+}
+
+/* MAIN */
+.main{
+  flex:1;
+  padding:25px;
+}
+
+/* TOP BAR */
+.topbar{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+input, select{
   padding:12px;
-  margin:5px;
   border-radius:12px;
   background:var(--card);
-  color:white;
   border:1px solid var(--line);
+  color:white;
+  outline:none;
+}
+
+/* AI BOX */
+.ai{
+  margin:15px 0;
+  padding:14px;
+  border-radius:14px;
+  background:rgba(212,175,55,0.06);
+  border:1px solid rgba(212,175,55,0.2);
+  color:var(--gold);
+  font-weight:600;
 }
 
 /* GRID */
 .grid{
+  margin-top:20px;
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
-  gap:18px;
-  margin-top:25px;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:16px;
 }
 
 /* CARD */
 .card{
-  background:linear-gradient(145deg,#0f111a,#0a0b10);
+  background:linear-gradient(145deg,#111522,#0b0d14);
   border:1px solid var(--line);
   border-radius:18px;
   overflow:hidden;
@@ -79,16 +124,14 @@ select{
   border-color:var(--gold);
 }
 
-/* IMAGE */
 .card img{
   width:100%;
-  height:200px;
+  height:180px;
   object-fit:cover;
 }
 
-/* CONTENT */
 .content{
-  padding:15px;
+  padding:14px;
 }
 
 .brand{
@@ -103,51 +146,67 @@ select{
 
 .price{
   color:var(--gold);
-  margin-top:5px;
-  font-weight:600;
-}
-
-/* BAR */
-.bar{
-  height:6px;
-  background:#1a1d2a;
-  border-radius:10px;
-  overflow:hidden;
   margin-top:6px;
 }
 
-.fill{
-  height:100%;
-  width:0%;
-  background:linear-gradient(90deg,#d4af37,#ffcc55);
-  transition:0.5s;
+/* BTN */
+.btn{
+  margin-top:10px;
+  padding:8px 10px;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  background:var(--gold);
+  color:black;
+  font-weight:600;
 }
 
-/* AI BOX */
-.ai{
-  margin:15px 0;
-  padding:14px;
+/* COMPARE */
+.compare{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#111;
+  border:1px solid var(--gold);
+  padding:12px;
   border-radius:14px;
-  background:rgba(212,175,55,0.06);
-  border:1px solid rgba(212,175,55,0.2);
-  color:var(--gold);
-  font-weight:600;
+  width:260px;
+}
+
+.small{
+  font-size:12px;
+  color:var(--muted);
 }
 </style>
 </head>
 
 <body>
 
-<header>
-  <h1>LuxAuto AI Compare</h1>
-  <p>Luxury Car Intelligence Dashboard</p>
-</header>
+<div class="app">
 
-<div class="container">
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="logo">LuxAuto Pro Max</div>
 
-<select id="c1" onchange="update()"></select>
-<select id="c2" onchange="update()"></select>
-<select id="c3" onchange="update()"></select>
+  <div class="nav">
+    <button onclick="reset()">Dashboard</button>
+    <button onclick="showFav()">Favorites</button>
+    <button onclick="clearFav()">Clear Favorites</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+<div class="topbar">
+  <input id="search" placeholder="Search luxury cars..." oninput="render()">
+  <select id="brandFilter" onchange="render()">
+    <option value="">All Brands</option>
+  </select>
+  <select id="compare1" onchange="updateCompare()"></select>
+  <select id="compare2" onchange="updateCompare()"></select>
+  <select id="compare3" onchange="updateCompare()"></select>
+</div>
 
 <div id="ai" class="ai"></div>
 
@@ -155,123 +214,167 @@ select{
 
 </div>
 
+</div>
+
+<div class="compare" id="compareBox">
+<b>Compare AI</b>
+<div class="small" id="compareText">Select cars</div>
+</div>
+
 <script>
 
 const cars=[
 {
- brand:"Rolls Royce",
- name:"Phantom VIII",
- price:460000,
- hp:563,
- speed:155,
- luxury:10,
- img:"https://images.unsplash.com/photo-1614200187524-dc4b892acf16"
+brand:"Rolls Royce",
+name:"Phantom VIII",
+price:460000,
+hp:563,
+speed:155,
+img:"https://images.unsplash.com/photo-1614200187524-dc4b892acf16"
 },
 {
- brand:"Bentley",
- name:"Flying Spur",
- price:220000,
- hp:626,
- speed:207,
- luxury:9,
- img:"https://images.unsplash.com/photo-1617654112368-307921291f42"
+brand:"Bentley",
+name:"Flying Spur",
+price:220000,
+hp:626,
+speed:207,
+img:"https://images.unsplash.com/photo-1617654112368-307921291f42"
 },
 {
- brand:"Mercedes",
- name:"Maybach S680",
- price:200000,
- hp:621,
- speed:155,
- luxury:10,
- img:"https://images.unsplash.com/photo-1617814065893-0a0f4c8ad5ac"
+brand:"Mercedes",
+name:"Maybach S680",
+price:200000,
+hp:621,
+speed:155,
+img:"https://images.unsplash.com/photo-1617814065893-0a0f4c8ad5ac"
 },
 {
- brand:"Lamborghini",
- name:"Urus",
- price:240000,
- hp:666,
- speed:190,
- luxury:8,
- img:"https://images.unsplash.com/photo-1544829099-b9a0c07fad1a"
+brand:"Lamborghini",
+name:"Urus",
+price:240000,
+hp:666,
+speed:190,
+img:"https://images.unsplash.com/photo-1544829099-b9a0c07fad1a"
 },
 {
- brand:"Ferrari",
- name:"SF90 Stradale",
- price:520000,
- hp:986,
- speed:211,
- luxury:8,
- img:"https://images.unsplash.com/photo-1542362567-b07e54358753"
+brand:"Ferrari",
+name:"SF90",
+price:520000,
+hp:986,
+speed:211,
+img:"https://images.unsplash.com/photo-1542362567-b07e54358753"
 },
 {
- brand:"Porsche",
- name:"911 Turbo S",
- price:230000,
- hp:640,
- speed:205,
- luxury:8,
- img:"https://images.unsplash.com/photo-1503376780353-7e6692767b70"
+brand:"Porsche",
+name:"911 Turbo S",
+price:230000,
+hp:640,
+speed:205,
+img:"https://images.unsplash.com/photo-1503376780353-7e6692767b70"
 }
 ];
 
-// dropdown
-["c1","c2","c3"].forEach(id=>{
- let sel=document.getElementById(id);
- cars.forEach(c=>{
+let favorites=JSON.parse(localStorage.getItem("fav"))||[];
+
+const grid=document.getElementById("grid");
+
+function initFilters(){
+ let brands=[...new Set(cars.map(c=>c.brand))];
+ let sel=document.getElementById("brandFilter");
+ brands.forEach(b=>{
   let o=document.createElement("option");
-  o.value=c.name;
-  o.innerText=c.brand+" "+c.name;
+  o.value=b;
+  o.innerText=b;
   sel.appendChild(o);
  });
-});
 
-function get(n){
- return cars.find(c=>c.name===n);
+ ["compare1","compare2","compare3"].forEach(id=>{
+  let s=document.getElementById(id);
+  cars.forEach(c=>{
+   let o=document.createElement("option");
+   o.value=c.name;
+   o.innerText=c.brand+" "+c.name;
+   s.appendChild(o);
+  });
+ });
 }
 
 function score(c){
- return c.hp*0.35 + c.speed*0.25 + c.luxury*0.25 + (1000000/c.price)*0.15;
+ return c.hp*0.35 + c.speed*0.25 + (1000000/c.price)*0.4;
 }
 
-function update(){
+function render(){
+ let q=document.getElementById("search").value.toLowerCase();
+ let b=document.getElementById("brandFilter").value;
 
- let selected=[get(c1.value),get(c2.value),get(c3.value)].filter(Boolean);
+ let filtered=cars.filter(c=>{
+  return (!q || c.name.toLowerCase().includes(q)) &&
+         (!b || c.brand===b);
+ });
 
- if(!selected.length) return;
+ grid.innerHTML="";
 
- let best=[...selected].sort((a,b)=>score(b)-score(a))[0];
-
- document.getElementById("ai").innerHTML=
- `🧠 AI Recommendation: <b>${best.brand} ${best.name}</b> is the best choice`;
-
- let html="";
-
- selected.forEach(c=>{
-  html+=`
+ filtered.forEach(c=>{
+  grid.innerHTML+=`
   <div class="card">
-    <img src="${c.img}" />
+    <img src="${c.img}">
     <div class="content">
-
       <div class="brand">${c.brand}</div>
       <div class="name">${c.name}</div>
       <div class="price">$${c.price.toLocaleString()}</div>
-
-      <div>Horsepower: ${c.hp}</div>
-      <div class="bar"><div class="fill" style="width:${c.hp/10}%"></div></div>
-
-      <div>Top Speed: ${c.speed}</div>
-      <div class="bar"><div class="fill" style="width:${c.speed}%"></div></div>
-
-      <div>Luxury Level: ${c.luxury}/10</div>
-      <div class="bar"><div class="fill" style="width:${c.luxury*10}%"></div></div>
-
+      <button class="btn" onclick="fav('${c.name}')">❤️ Save</button>
     </div>
-  </div>
-  `;
+  </div>`;
  });
-
- document.getElementById("grid").innerHTML=html;
 }
+
+function fav(name){
+ let car=cars.find(c=>c.name===name);
+ if(!favorites.find(f=>f.name===name)){
+  favorites.push(car);
+ }
+ localStorage.setItem("fav",JSON.stringify(favorites));
+ alert("Saved!");
+}
+
+function showFav(){
+ grid.innerHTML="";
+ favorites.forEach(c=>{
+  grid.innerHTML+=`
+  <div class="card">
+    <img src="${c.img}">
+    <div class="content">
+      <div class="brand">${c.brand}</div>
+      <div class="name">${c.name}</div>
+      <div class="price">$${c.price.toLocaleString()}</div>
+    </div>
+  </div>`;
+ });
+}
+
+function clearFav(){
+ favorites=[];
+ localStorage.removeItem("fav");
+ render();
+}
+
+function updateCompare(){
+ let a=document.getElementById("compare1").value;
+ let b=document.getElementById("compare2").value;
+ let c=document.getElementById("compare3").value;
+
+ let list=[a,b,c].map(n=>cars.find(x=>x.name===n)).filter(Boolean);
+
+ if(!list.length) return;
+
+ let best=[...list].sort((x,y)=>score(y)-score(x))[0];
+
+ document.getElementById("compareText").innerHTML=
+ "Best: "+best.brand+" "+best.name;
+}
+
+initFilters();
+render();
 
 </script>
 
