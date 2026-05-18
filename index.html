@@ -3,150 +3,251 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Luxury Car 3D Viewer</title>
+<title>LuxAuto Compare Pro</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 
 <style>
+:root{
+  --bg:#07070a;
+  --card:#0f0f14;
+  --gold:#d4af37;
+  --text:#ffffff;
+  --muted:#a0a0a0;
+  --line:#1c1c22;
+}
+
+*{box-sizing:border-box}
+
 body{
   margin:0;
   font-family:Inter;
-  background:radial-gradient(circle at top,#141420,#050507);
-  color:white;
+  background:radial-gradient(circle at top,#151521,#07070a);
+  color:var(--text);
 }
 
+/* HEADER */
 header{
   text-align:center;
-  padding:20px;
+  padding:30px 20px 10px;
 }
 
 header h1{
   margin:0;
-  font-size:40px;
+  font-size:42px;
+  letter-spacing:-1px;
 }
 
+header p{
+  color:var(--muted);
+  margin-top:8px;
+}
+
+/* CONTROL PANEL */
 .container{
+  max-width:1200px;
+  margin:auto;
   padding:20px;
 }
 
-select{
-  width:32%;
-  padding:12px;
-  margin:5px;
-  border-radius:10px;
-  background:#111;
-  color:white;
-  border:1px solid #333;
+.select-grid{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
 }
 
-.row{
-  display:flex;
-  flex-wrap:wrap;
-  gap:15px;
-  justify-content:center;
-  margin-top:20px;
+select{
+  flex:1;
+  min-width:180px;
+  padding:12px;
+  border-radius:12px;
+  background:var(--card);
+  color:white;
+  border:1px solid var(--line);
+  outline:none;
+  transition:0.3s;
+}
+
+select:hover{
+  border-color:var(--gold);
+}
+
+/* AI BOX */
+.ai{
+  margin-top:15px;
+  padding:14px;
+  border-radius:14px;
+  background:rgba(212,175,55,0.06);
+  border:1px solid rgba(212,175,55,0.2);
+  color:var(--gold);
+  font-weight:600;
+}
+
+/* GRID */
+.grid{
+  margin-top:25px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:18px;
 }
 
 /* CARD */
 .card{
-  width:30%;
-  min-width:280px;
-  background:rgba(255,255,255,0.04);
-  border:1px solid #222;
-  border-radius:16px;
-  overflow:hidden;
+  background:linear-gradient(145deg,#0f0f16,#0a0a0f);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:16px;
   transition:0.3s;
 }
 
 .card:hover{
   transform:translateY(-6px);
-  border-color:#FFD700;
+  border-color:var(--gold);
+  box-shadow:0 10px 40px rgba(0,0,0,0.5);
 }
 
-/* FAKE 3D VIEW */
-.viewer{
-  width:100%;
-  height:260px;
-  background:#000;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  overflow:hidden;
-  cursor:grab;
+.brand{
+  font-size:12px;
+  color:var(--muted);
+  margin-bottom:6px;
 }
 
-.viewer img{
-  width:100%;
-  user-select:none;
-  pointer-events:none;
-  transform:scale(1.1);
+.name{
+  font-size:18px;
+  font-weight:700;
 }
 
 .price{
-  color:#FFD700;
+  color:var(--gold);
+  margin-top:6px;
+  font-weight:600;
+}
+
+/* STATS */
+.stat{
+  margin-top:12px;
+  font-size:13px;
+  color:var(--muted);
+}
+
+.bar{
+  height:6px;
+  background:#1a1a22;
+  border-radius:10px;
+  overflow:hidden;
+  margin-top:6px;
+}
+
+.fill{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#d4af37,#ffcc55);
+  transition:0.5s;
+}
+
+/* FLOAT GLOW */
+.glow{
+  position:fixed;
+  width:500px;
+  height:500px;
+  background:var(--gold);
+  filter:blur(200px);
+  opacity:0.06;
+  top:-150px;
+  left:-150px;
 }
 </style>
 </head>
 
 <body>
 
+<div class="glow"></div>
+
 <header>
-  <h1>Luxury Fake 3D Car Viewer</h1>
-  <p>Drag to rotate like showroom</p>
+  <h1>Luxury Auto Compare Pro</h1>
+  <p>Compare elite cars like a premium buyer dashboard</p>
 </header>
 
 <div class="container">
 
-<select id="c1" onchange="update()"></select>
-<select id="c2" onchange="update()"></select>
-<select id="c3" onchange="update()"></select>
+<div class="select-grid">
+  <select id="c1" onchange="update()"></select>
+  <select id="c2" onchange="update()"></select>
+  <select id="c3" onchange="update()"></select>
+</div>
 
-<div class="row" id="view"></div>
+<div id="ai" class="ai"></div>
+
+<div class="grid" id="grid"></div>
 
 </div>
 
 <script>
-/*
-We simulate 360° using multiple images.
-For demo: we reuse same image but "fake rotation effect".
-*/
-
-const cars = [
+const cars=[
 {
- name:"Porsche 911",
- price:230000,
- img:"https://images.unsplash.com/photo-1503376780353-7e6692767b70"
-},
-{
- name:"Ferrari SF90",
- price:520000,
- img:"https://images.unsplash.com/photo-1542362567-b07e54358753"
-},
-{
- name:"Lamborghini Urus",
- price:240000,
- img:"https://images.unsplash.com/photo-1544829099-b9a0c07fad1a"
-},
-{
- name:"Bentley",
- price:220000,
- img:"https://images.unsplash.com/photo-1619767886558-efdc259cde1f"
-},
-{
- name:"Rolls Royce",
+ brand:"Rolls Royce",
+ name:"Phantom VIII",
  price:460000,
- img:"https://images.unsplash.com/photo-1614200187524-dc4b892acf16"
+ hp:563,
+ speed:155,
+ luxury:10,
+ efficiency:6
+},
+{
+ brand:"Bentley",
+ name:"Flying Spur",
+ price:220000,
+ hp:626,
+ speed:207,
+ luxury:9,
+ efficiency:7
+},
+{
+ brand:"Mercedes-Benz",
+ name:"Maybach S680",
+ price:200000,
+ hp:621,
+ speed:155,
+ luxury:10,
+ efficiency:7
+},
+{
+ brand:"Lamborghini",
+ name:"Urus Performante",
+ price:240000,
+ hp:666,
+ speed:190,
+ luxury:8,
+ efficiency:6
+},
+{
+ brand:"Ferrari",
+ name:"SF90 Stradale",
+ price:520000,
+ hp:986,
+ speed:211,
+ luxury:8,
+ efficiency:6
+},
+{
+ brand:"Porsche",
+ name:"911 Turbo S",
+ price:230000,
+ hp:640,
+ speed:205,
+ luxury:8,
+ efficiency:8
 }
 ];
 
-// fill dropdown
+// fill selects
 ["c1","c2","c3"].forEach(id=>{
- let s=document.getElementById(id);
+ let sel=document.getElementById(id);
  cars.forEach(c=>{
-  let o=document.createElement("option");
-  o.value=c.name;
-  o.innerText=c.name;
-  s.appendChild(o);
+  let opt=document.createElement("option");
+  opt.value=c.name;
+  opt.innerText=c.brand+" "+c.name;
+  sel.appendChild(opt);
  });
 });
 
@@ -154,52 +255,50 @@ function get(name){
  return cars.find(c=>c.name===name);
 }
 
-function createViewer(img){
- let div=document.createElement("div");
- div.className="viewer";
-
- let image=document.createElement("img");
- image.src=img;
-
- let rotate=0;
-
- div.addEventListener("mousemove",(e)=>{
-  rotate = (e.offsetX / div.offsetWidth) * 40 - 20;
-  image.style.transform = `scale(1.2) rotateY(${rotate}deg)`;
- });
-
- div.addEventListener("mouseleave",()=>{
-  image.style.transform="scale(1.1) rotateY(0deg)";
- });
-
- div.appendChild(image);
- return div;
+function score(c){
+ return (c.hp*0.35)+(c.speed*0.25)+(c.luxury*0.25)+(c.efficiency*0.15);
 }
 
 function update(){
 
- let selected=[get(c1.value),get(c2.value),get(c3.value)]
- .filter(Boolean);
+ let selected=[get(c1.value),get(c2.value),get(c3.value)].filter(Boolean);
+
+ if(!selected.length) return;
+
+ let best=[...selected].sort((a,b)=>score(b)-score(a))[0];
+
+ document.getElementById("ai").innerHTML=
+ `🧠 AI Recommendation: <b>${best.brand} ${best.name}</b> is the best overall pick`;
 
  let html="";
 
  selected.forEach(c=>{
-  let card=document.createElement("div");
-  card.className="card";
+  let s=score(c);
 
-  let viewer=createViewer(c.img);
+  html+=`
+  <div class="card">
+    <div class="brand">${c.brand}</div>
+    <div class="name">${c.name}</div>
+    <div class="price">$${c.price.toLocaleString()}</div>
 
-  card.innerHTML=`
-    <h3 style="padding:10px">${c.name}</h3>
-    <div style="padding:10px;color:#FFD700">$${c.price.toLocaleString()}</div>
+    <div class="stat">Horsepower: ${c.hp}</div>
+    <div class="bar"><div class="fill" style="width:${c.hp/10}%"></div></div>
+
+    <div class="stat">Top Speed: ${c.speed} mph</div>
+    <div class="bar"><div class="fill" style="width:${c.speed}%"></div></div>
+
+    <div class="stat">Luxury Rating</div>
+    <div class="bar"><div class="fill" style="width:${c.luxury*10}%"></div></div>
+
+    <div class="stat">Efficiency</div>
+    <div class="bar"><div class="fill" style="width:${c.efficiency*10}%"></div></div>
+
+    <div class="stat"><b>Score:</b> ${s.toFixed(1)}</div>
+  </div>
   `;
-
-  card.insertBefore(viewer, card.children[0]);
-
-  html+=card.outerHTML;
  });
 
- document.getElementById("view").innerHTML=html;
+ document.getElementById("grid").innerHTML=html;
 }
 </script>
 
