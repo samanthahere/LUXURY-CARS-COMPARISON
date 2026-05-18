@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Luxury 3D Car Compare</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Luxury Car 3D Viewer</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
 
@@ -17,16 +17,12 @@ body{
 
 header{
   text-align:center;
-  padding:25px;
+  padding:20px;
 }
 
 header h1{
   margin:0;
   font-size:40px;
-}
-
-header p{
-  opacity:0.6;
 }
 
 .container{
@@ -37,18 +33,18 @@ select{
   width:32%;
   padding:12px;
   margin:5px;
+  border-radius:10px;
   background:#111;
   color:white;
   border:1px solid #333;
-  border-radius:10px;
 }
 
-/* GRID */
 .row{
   display:flex;
   flex-wrap:wrap;
   gap:15px;
   justify-content:center;
+  margin-top:20px;
 }
 
 /* CARD */
@@ -58,7 +54,7 @@ select{
   background:rgba(255,255,255,0.04);
   border:1px solid #222;
   border-radius:16px;
-  padding:10px;
+  overflow:hidden;
   transition:0.3s;
 }
 
@@ -67,13 +63,23 @@ select{
   border-color:#FFD700;
 }
 
-/* 3D FRAME */
-iframe{
+/* FAKE 3D VIEW */
+.viewer{
   width:100%;
-  height:300px;
-  border-radius:12px;
-  border:none;
+  height:260px;
   background:#000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  cursor:grab;
+}
+
+.viewer img{
+  width:100%;
+  user-select:none;
+  pointer-events:none;
+  transform:scale(1.1);
 }
 
 .price{
@@ -85,8 +91,8 @@ iframe{
 <body>
 
 <header>
-  <h1>Luxury 3D Car Compare</h1>
-  <p>Real Cars • Real 3D • No Fake Models</p>
+  <h1>Luxury Fake 3D Car Viewer</h1>
+  <p>Drag to rotate like showroom</p>
 </header>
 
 <div class="container">
@@ -100,47 +106,74 @@ iframe{
 </div>
 
 <script>
+/*
+We simulate 360° using multiple images.
+For demo: we reuse same image but "fake rotation effect".
+*/
+
 const cars = [
 {
  name:"Porsche 911",
  price:230000,
- model:`https://sketchfab.com/models/3d4b2f6b1b7a4d2bb6f4c2/embed`
+ img:"https://images.unsplash.com/photo-1503376780353-7e6692767b70"
 },
 {
  name:"Ferrari SF90",
  price:520000,
- model:`https://sketchfab.com/models/7c3c2f8d1b9e4a7bb1c0/embed`
+ img:"https://images.unsplash.com/photo-1542362567-b07e54358753"
 },
 {
  name:"Lamborghini Urus",
  price:240000,
- model:`https://sketchfab.com/models/9a1c2d7f3b6e4c1aa2d5/embed`
+ img:"https://images.unsplash.com/photo-1544829099-b9a0c07fad1a"
 },
 {
- name:"Bentley Continental",
+ name:"Bentley",
  price:220000,
- model:`https://sketchfab.com/models/2f8a1c6d9b3e4c0bb7d1/embed`
+ img:"https://images.unsplash.com/photo-1619767886558-efdc259cde1f"
 },
 {
- name:"Rolls Royce Phantom",
+ name:"Rolls Royce",
  price:460000,
- model:`https://sketchfab.com/models/1b7c2d9f4a6e4c3bb8a0/embed`
+ img:"https://images.unsplash.com/photo-1614200187524-dc4b892acf16"
 }
 ];
 
-// fill dropdowns
+// fill dropdown
 ["c1","c2","c3"].forEach(id=>{
- let sel=document.getElementById(id);
+ let s=document.getElementById(id);
  cars.forEach(c=>{
-  let opt=document.createElement("option");
-  opt.value=c.name;
-  opt.innerText=c.name;
-  sel.appendChild(opt);
+  let o=document.createElement("option");
+  o.value=c.name;
+  o.innerText=c.name;
+  s.appendChild(o);
  });
 });
 
 function get(name){
  return cars.find(c=>c.name===name);
+}
+
+function createViewer(img){
+ let div=document.createElement("div");
+ div.className="viewer";
+
+ let image=document.createElement("img");
+ image.src=img;
+
+ let rotate=0;
+
+ div.addEventListener("mousemove",(e)=>{
+  rotate = (e.offsetX / div.offsetWidth) * 40 - 20;
+  image.style.transform = `scale(1.2) rotateY(${rotate}deg)`;
+ });
+
+ div.addEventListener("mouseleave",()=>{
+  image.style.transform="scale(1.1) rotateY(0deg)";
+ });
+
+ div.appendChild(image);
+ return div;
 }
 
 function update(){
@@ -151,19 +184,19 @@ function update(){
  let html="";
 
  selected.forEach(c=>{
-  html+=`
-   <div class="card">
+  let card=document.createElement("div");
+  card.className="card";
 
-     <iframe
-      src="${c.model}"
-      allow="autoplay; fullscreen; xr-spatial-tracking">
-     </iframe>
+  let viewer=createViewer(c.img);
 
-     <h3>${c.name}</h3>
-     <div class="price">$${c.price.toLocaleString()}</div>
-
-   </div>
+  card.innerHTML=`
+    <h3 style="padding:10px">${c.name}</h3>
+    <div style="padding:10px;color:#FFD700">$${c.price.toLocaleString()}</div>
   `;
+
+  card.insertBefore(viewer, card.children[0]);
+
+  html+=card.outerHTML;
  });
 
  document.getElementById("view").innerHTML=html;
