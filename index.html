@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Luxury Car Compare</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: radial-gradient(circle at top, #111, #000);
+  color: white;
+}
+
+h1 {
+  text-align: center;
+  padding: 20px;
+}
+
+.container {
+  padding: 20px;
+}
+
+.select-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+select {
+  flex: 1;
+  padding: 10px;
+  background: #111;
+  color: white;
+  border: 1px solid #333;
+  border-radius: 8px;
+}
+
+.cards {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.card {
+  flex: 1;
+  min-width: 250px;
+  background: rgba(255,255,255,0.05);
+  padding: 15px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.card img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.price {
+  color: gold;
+}
+
+.best {
+  text-align: center;
+  margin: 15px 0;
+  color: gold;
+}
+
+.bar {
+  height: 8px;
+  background: #222;
+  border-radius: 5px;
+  margin: 5px 0;
+  overflow: hidden;
+}
+
+.fill {
+  height: 100%;
+  background: gold;
+  width: 0%;
+  transition: 0.4s;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>Luxury Car Comparison 🚗</h1>
+
+<div class="container">
+
+  <div class="select-row">
+    <select id="car1" onchange="update()"></select>
+    <select id="car2" onchange="update()"></select>
+    <select id="car3" onchange="update()"></select>
+  </div>
+
+  <div id="best" class="best"></div>
+
+  <div class="cards" id="cards"></div>
+
+</div>
+
+<script>
+const cars = [
+  {
+    name: "Rolls Royce Phantom",
+    price: 460000,
+    hp: 563,
+    speed: 155,
+    img: "https://images.unsplash.com/photo-1619767886558-efdc259cde1f"
+  },
+  {
+    name: "Bentley Flying Spur",
+    price: 220000,
+    hp: 626,
+    speed: 207,
+    img: "https://images.unsplash.com/photo-1617654112368-307921291f42"
+  },
+  {
+    name: "Mercedes Maybach",
+    price: 200000,
+    hp: 496,
+    speed: 155,
+    img: "https://images.unsplash.com/photo-1617814065893-0a0f4c8ad5ac"
+  },
+  {
+    name: "Lamborghini Urus",
+    price: 240000,
+    hp: 641,
+    speed: 190,
+    img: "https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2"
+  },
+  {
+    name: "Ferrari SF90",
+    price: 520000,
+    hp: 986,
+    speed: 211,
+    img: "https://images.unsplash.com/photo-1621135802920-133df287f89c"
+  }
+];
+
+// fill dropdowns
+["car1","car2","car3"].forEach(id=>{
+  let sel = document.getElementById(id);
+  cars.forEach(c=>{
+    let opt = document.createElement("option");
+    opt.value = c.name;
+    opt.innerText = c.name;
+    sel.appendChild(opt);
+  });
+});
+
+function getCar(name){
+  return cars.find(c=>c.name === name);
+}
+
+function update(){
+
+  let selected = [
+    getCar(car1.value),
+    getCar(car2.value),
+    getCar(car3.value)
+  ].filter(Boolean);
+
+  let best = null;
+
+  if(selected.length){
+    best = selected.reduce((a,b)=>{
+      let sa = a.hp + a.speed;
+      let sb = b.hp + b.speed;
+      return sb > sa ? b : a;
+    });
+  }
+
+  document.getElementById("best").innerHTML =
+    best ? `🧠 Best Performance: <b>${best.name}</b>` : "";
+
+  let html = "";
+
+  selected.forEach(c=>{
+    html += `
+      <div class="card">
+        <img src="${c.img}" />
+        <h3>${c.name}</h3>
+        <p class="price">$${c.price.toLocaleString()}</p>
+
+        <p>Horsepower</p>
+        <div class="bar"><div class="fill" style="width:${c.hp/10}%"></div></div>
+
+        <p>Speed</p>
+        <div class="bar"><div class="fill" style="width:${c.speed}%"></div></div>
+      </div>
+    `;
+  });
+
+  document.getElementById("cards").innerHTML = html;
+}
+</script>
+
+</body>
+</html>
