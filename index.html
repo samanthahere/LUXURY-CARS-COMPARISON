@@ -3,18 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LuxAuto Compare Pro</title>
+<title>LuxAuto AI Compare</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 
 <style>
 :root{
   --bg:#07070a;
-  --card:#0f0f14;
+  --card:#0f1118;
   --gold:#d4af37;
-  --text:#ffffff;
-  --muted:#a0a0a0;
-  --line:#1c1c22;
+  --muted:#9aa0a6;
+  --line:#1c1f2a;
 }
 
 *{box-sizing:border-box}
@@ -22,8 +21,8 @@
 body{
   margin:0;
   font-family:Inter;
-  background:radial-gradient(circle at top,#151521,#07070a);
-  color:var(--text);
+  background:radial-gradient(circle at top,#15152a,#07070a);
+  color:white;
 }
 
 /* HEADER */
@@ -35,81 +34,66 @@ header{
 header h1{
   margin:0;
   font-size:42px;
-  letter-spacing:-1px;
 }
 
 header p{
   color:var(--muted);
-  margin-top:8px;
 }
 
-/* CONTROL PANEL */
+/* SELECT */
 .container{
   max-width:1200px;
   margin:auto;
   padding:20px;
 }
 
-.select-grid{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-}
-
 select{
-  flex:1;
-  min-width:180px;
+  width:32%;
   padding:12px;
+  margin:5px;
   border-radius:12px;
   background:var(--card);
   color:white;
   border:1px solid var(--line);
-  outline:none;
-  transition:0.3s;
-}
-
-select:hover{
-  border-color:var(--gold);
-}
-
-/* AI BOX */
-.ai{
-  margin-top:15px;
-  padding:14px;
-  border-radius:14px;
-  background:rgba(212,175,55,0.06);
-  border:1px solid rgba(212,175,55,0.2);
-  color:var(--gold);
-  font-weight:600;
 }
 
 /* GRID */
 .grid{
-  margin-top:25px;
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
   gap:18px;
+  margin-top:25px;
 }
 
 /* CARD */
 .card{
-  background:linear-gradient(145deg,#0f0f16,#0a0a0f);
+  background:linear-gradient(145deg,#0f111a,#0a0b10);
   border:1px solid var(--line);
   border-radius:18px;
-  padding:16px;
+  overflow:hidden;
   transition:0.3s;
 }
 
 .card:hover{
-  transform:translateY(-6px);
+  transform:translateY(-8px);
   border-color:var(--gold);
-  box-shadow:0 10px 40px rgba(0,0,0,0.5);
+}
+
+/* IMAGE */
+.card img{
+  width:100%;
+  height:200px;
+  object-fit:cover;
+}
+
+/* CONTENT */
+.content{
+  padding:15px;
 }
 
 .brand{
   font-size:12px;
   color:var(--muted);
-  margin-bottom:6px;
 }
 
 .name{
@@ -119,20 +103,14 @@ select:hover{
 
 .price{
   color:var(--gold);
-  margin-top:6px;
+  margin-top:5px;
   font-weight:600;
 }
 
-/* STATS */
-.stat{
-  margin-top:12px;
-  font-size:13px;
-  color:var(--muted);
-}
-
+/* BAR */
 .bar{
   height:6px;
-  background:#1a1a22;
+  background:#1a1d2a;
   border-radius:10px;
   overflow:hidden;
   margin-top:6px;
@@ -145,36 +123,31 @@ select:hover{
   transition:0.5s;
 }
 
-/* FLOAT GLOW */
-.glow{
-  position:fixed;
-  width:500px;
-  height:500px;
-  background:var(--gold);
-  filter:blur(200px);
-  opacity:0.06;
-  top:-150px;
-  left:-150px;
+/* AI BOX */
+.ai{
+  margin:15px 0;
+  padding:14px;
+  border-radius:14px;
+  background:rgba(212,175,55,0.06);
+  border:1px solid rgba(212,175,55,0.2);
+  color:var(--gold);
+  font-weight:600;
 }
 </style>
 </head>
 
 <body>
 
-<div class="glow"></div>
-
 <header>
-  <h1>Luxury Auto Compare Pro</h1>
-  <p>Compare elite cars like a premium buyer dashboard</p>
+  <h1>LuxAuto AI Compare</h1>
+  <p>Luxury Car Intelligence Dashboard</p>
 </header>
 
 <div class="container">
 
-<div class="select-grid">
-  <select id="c1" onchange="update()"></select>
-  <select id="c2" onchange="update()"></select>
-  <select id="c3" onchange="update()"></select>
-</div>
+<select id="c1" onchange="update()"></select>
+<select id="c2" onchange="update()"></select>
+<select id="c3" onchange="update()"></select>
 
 <div id="ai" class="ai"></div>
 
@@ -183,6 +156,7 @@ select:hover{
 </div>
 
 <script>
+
 const cars=[
 {
  brand:"Rolls Royce",
@@ -191,7 +165,7 @@ const cars=[
  hp:563,
  speed:155,
  luxury:10,
- efficiency:6
+ img:"https://images.unsplash.com/photo-1614200187524-dc4b892acf16"
 },
 {
  brand:"Bentley",
@@ -200,25 +174,25 @@ const cars=[
  hp:626,
  speed:207,
  luxury:9,
- efficiency:7
+ img:"https://images.unsplash.com/photo-1617654112368-307921291f42"
 },
 {
- brand:"Mercedes-Benz",
+ brand:"Mercedes",
  name:"Maybach S680",
  price:200000,
  hp:621,
  speed:155,
  luxury:10,
- efficiency:7
+ img:"https://images.unsplash.com/photo-1617814065893-0a0f4c8ad5ac"
 },
 {
  brand:"Lamborghini",
- name:"Urus Performante",
+ name:"Urus",
  price:240000,
  hp:666,
  speed:190,
  luxury:8,
- efficiency:6
+ img:"https://images.unsplash.com/photo-1544829099-b9a0c07fad1a"
 },
 {
  brand:"Ferrari",
@@ -227,7 +201,7 @@ const cars=[
  hp:986,
  speed:211,
  luxury:8,
- efficiency:6
+ img:"https://images.unsplash.com/photo-1542362567-b07e54358753"
 },
 {
  brand:"Porsche",
@@ -236,27 +210,27 @@ const cars=[
  hp:640,
  speed:205,
  luxury:8,
- efficiency:8
+ img:"https://images.unsplash.com/photo-1503376780353-7e6692767b70"
 }
 ];
 
-// fill selects
+// dropdown
 ["c1","c2","c3"].forEach(id=>{
  let sel=document.getElementById(id);
  cars.forEach(c=>{
-  let opt=document.createElement("option");
-  opt.value=c.name;
-  opt.innerText=c.brand+" "+c.name;
-  sel.appendChild(opt);
+  let o=document.createElement("option");
+  o.value=c.name;
+  o.innerText=c.brand+" "+c.name;
+  sel.appendChild(o);
  });
 });
 
-function get(name){
- return cars.find(c=>c.name===name);
+function get(n){
+ return cars.find(c=>c.name===n);
 }
 
 function score(c){
- return (c.hp*0.35)+(c.speed*0.25)+(c.luxury*0.25)+(c.efficiency*0.15);
+ return c.hp*0.35 + c.speed*0.25 + c.luxury*0.25 + (1000000/c.price)*0.15;
 }
 
 function update(){
@@ -268,38 +242,37 @@ function update(){
  let best=[...selected].sort((a,b)=>score(b)-score(a))[0];
 
  document.getElementById("ai").innerHTML=
- `🧠 AI Recommendation: <b>${best.brand} ${best.name}</b> is the best overall pick`;
+ `🧠 AI Recommendation: <b>${best.brand} ${best.name}</b> is the best choice`;
 
  let html="";
 
  selected.forEach(c=>{
-  let s=score(c);
-
   html+=`
   <div class="card">
-    <div class="brand">${c.brand}</div>
-    <div class="name">${c.name}</div>
-    <div class="price">$${c.price.toLocaleString()}</div>
+    <img src="${c.img}" />
+    <div class="content">
 
-    <div class="stat">Horsepower: ${c.hp}</div>
-    <div class="bar"><div class="fill" style="width:${c.hp/10}%"></div></div>
+      <div class="brand">${c.brand}</div>
+      <div class="name">${c.name}</div>
+      <div class="price">$${c.price.toLocaleString()}</div>
 
-    <div class="stat">Top Speed: ${c.speed} mph</div>
-    <div class="bar"><div class="fill" style="width:${c.speed}%"></div></div>
+      <div>Horsepower: ${c.hp}</div>
+      <div class="bar"><div class="fill" style="width:${c.hp/10}%"></div></div>
 
-    <div class="stat">Luxury Rating</div>
-    <div class="bar"><div class="fill" style="width:${c.luxury*10}%"></div></div>
+      <div>Top Speed: ${c.speed}</div>
+      <div class="bar"><div class="fill" style="width:${c.speed}%"></div></div>
 
-    <div class="stat">Efficiency</div>
-    <div class="bar"><div class="fill" style="width:${c.efficiency*10}%"></div></div>
+      <div>Luxury Level: ${c.luxury}/10</div>
+      <div class="bar"><div class="fill" style="width:${c.luxury*10}%"></div></div>
 
-    <div class="stat"><b>Score:</b> ${s.toFixed(1)}</div>
+    </div>
   </div>
   `;
  });
 
  document.getElementById("grid").innerHTML=html;
 }
+
 </script>
 
 </body>
