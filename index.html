@@ -3,202 +3,228 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Luxury Car Compare</title>
+<title>LuxCompare 3D</title>
+
+<script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
 
 <style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: radial-gradient(circle at top, #111, #000);
-  color: white;
+body{
+  margin:0;
+  font-family:Inter;
+  background:radial-gradient(circle at top,#141420,#050507);
+  color:white;
 }
 
-h1 {
-  text-align: center;
-  padding: 20px;
+/* HEADER */
+header{
+  text-align:center;
+  padding:25px;
+}
+header h1{
+  margin:0;
+  font-size:40px;
+}
+header p{
+  opacity:0.6;
 }
 
-.container {
-  padding: 20px;
+/* SELECT */
+.container{
+  padding:20px;
 }
 
-.select-row {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
+select{
+  width:32%;
+  padding:12px;
+  margin:5px;
+  border-radius:10px;
+  background:#111;
+  color:white;
+  border:1px solid #333;
 }
 
-select {
-  flex: 1;
-  padding: 10px;
-  background: #111;
-  color: white;
-  border: 1px solid #333;
-  border-radius: 8px;
+/* BEST */
+.best{
+  text-align:center;
+  margin:15px 0;
+  color:#FFD700;
+  font-weight:600;
 }
 
-.cards {
-  display: flex;
-  gap: 15px;
-  flex-wrap: wrap;
+/* GRID */
+.row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:15px;
+  justify-content:center;
 }
 
-.card {
-  flex: 1;
-  min-width: 250px;
-  background: rgba(255,255,255,0.05);
-  padding: 15px;
-  border-radius: 12px;
-  text-align: center;
+/* CARD */
+.card{
+  width:30%;
+  min-width:280px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid #222;
+  border-radius:16px;
+  padding:10px;
+  backdrop-filter:blur(10px);
+  transition:0.3s;
+}
+.card:hover{
+  transform:translateY(-6px);
+  border-color:#FFD700;
 }
 
-.card img {
-  width: 100%;
-  height: 160px;
-  object-fit: cover;
-  border-radius: 10px;
+/* 3D VIEW */
+model-viewer{
+  width:100%;
+  height:280px;
+  background:radial-gradient(circle,#222,#000);
+  border-radius:12px;
 }
 
-.price {
-  color: gold;
+/* TEXT */
+.price{
+  color:#FFD700;
 }
 
-.best {
-  text-align: center;
-  margin: 15px 0;
-  color: gold;
+.bar{
+  height:6px;
+  background:#222;
+  border-radius:10px;
+  margin:6px 0;
 }
 
-.bar {
-  height: 8px;
-  background: #222;
-  border-radius: 5px;
-  margin: 5px 0;
-  overflow: hidden;
+.fill{
+  height:100%;
+  background:linear-gradient(90deg,#FFD700,#ffb300);
+  width:0%;
 }
-
-.fill {
-  height: 100%;
-  background: gold;
-  width: 0%;
-  transition: 0.4s;
-}
-
 </style>
 </head>
 
 <body>
 
-<h1>Luxury Car Comparison 🚗</h1>
+<header>
+  <h1>Luxury 3D Car Compare</h1>
+  <p>Rotate • Compare • Decide</p>
+</header>
 
 <div class="container">
 
-  <div class="select-row">
-    <select id="car1" onchange="update()"></select>
-    <select id="car2" onchange="update()"></select>
-    <select id="car3" onchange="update()"></select>
-  </div>
+<select id="c1" onchange="update()"></select>
+<select id="c2" onchange="update()"></select>
+<select id="c3" onchange="update()"></select>
 
-  <div id="best" class="best"></div>
+<div id="best" class="best"></div>
 
-  <div class="cards" id="cards"></div>
+<div class="row" id="view"></div>
 
 </div>
 
 <script>
-const cars = [
-  {
-    name: "Rolls Royce Phantom",
-    price: 460000,
-    hp: 563,
-    speed: 155,
-    img: "https://images.unsplash.com/photo-1619767886558-efdc259cde1f"
-  },
-  {
-    name: "Bentley Flying Spur",
-    price: 220000,
-    hp: 626,
-    speed: 207,
-    img: "https://images.unsplash.com/photo-1617654112368-307921291f42"
-  },
-  {
-    name: "Mercedes Maybach",
-    price: 200000,
-    hp: 496,
-    speed: 155,
-    img: "https://images.unsplash.com/photo-1617814065893-0a0f4c8ad5ac"
-  },
-  {
-    name: "Lamborghini Urus",
-    price: 240000,
-    hp: 641,
-    speed: 190,
-    img: "https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2"
-  },
-  {
-    name: "Ferrari SF90",
-    price: 520000,
-    hp: 986,
-    speed: 211,
-    img: "https://images.unsplash.com/photo-1621135802920-133df287f89c"
-  }
+const cars=[
+{
+ name:"Rolls Royce Phantom",
+ price:460000,
+ hp:563,
+ speed:155,
+ model:"https://modelviewer.dev/shared-assets/models/Car.glb"
+},
+{
+ name:"Ferrari SF90",
+ price:520000,
+ hp:986,
+ speed:211,
+ model:"https://modelviewer.dev/shared-assets/models/RobotExpressive.glb"
+},
+{
+ name:"Lamborghini Urus",
+ price:240000,
+ hp:641,
+ speed:190,
+ model:"https://modelviewer.dev/shared-assets/models/Astronaut.glb"
+},
+{
+ name:"Bentley Flying Spur",
+ price:220000,
+ hp:626,
+ speed:207,
+ model:"https://modelviewer.dev/shared-assets/models/Car.glb"
+},
+{
+ name:"Mercedes Maybach",
+ price:200000,
+ hp:496,
+ speed:155,
+ model:"https://modelviewer.dev/shared-assets/models/RobotExpressive.glb"
+}
 ];
 
 // fill dropdowns
-["car1","car2","car3"].forEach(id=>{
-  let sel = document.getElementById(id);
-  cars.forEach(c=>{
-    let opt = document.createElement("option");
-    opt.value = c.name;
-    opt.innerText = c.name;
-    sel.appendChild(opt);
-  });
+["c1","c2","c3"].forEach(id=>{
+ let sel=document.getElementById(id);
+ cars.forEach(c=>{
+  let opt=document.createElement("option");
+  opt.value=c.name;
+  opt.innerText=c.name;
+  sel.appendChild(opt);
+ });
 });
 
-function getCar(name){
-  return cars.find(c=>c.name === name);
+function get(name){
+ return cars.find(c=>c.name===name);
+}
+
+function score(c){
+ return c.hp*0.4 + c.speed*0.4 + (1000000/c.price)*0.2;
 }
 
 function update(){
 
-  let selected = [
-    getCar(car1.value),
-    getCar(car2.value),
-    getCar(car3.value)
-  ].filter(Boolean);
+ let selected=[get(c1.value),get(c2.value),get(c3.value)]
+ .filter(Boolean);
 
-  let best = null;
+ if(!selected.length){
+  document.getElementById("view").innerHTML="";
+  document.getElementById("best").innerHTML="";
+  return;
+ }
 
-  if(selected.length){
-    best = selected.reduce((a,b)=>{
-      let sa = a.hp + a.speed;
-      let sb = b.hp + b.speed;
-      return sb > sa ? b : a;
-    });
-  }
+ let best=[...selected].sort((a,b)=>score(b)-score(a))[0];
 
-  document.getElementById("best").innerHTML =
-    best ? `🧠 Best Performance: <b>${best.name}</b>` : "";
+ document.getElementById("best").innerHTML=
+ `🧠 AI Recommendation: <b>${best.name}</b>`;
 
-  let html = "";
+ let html="";
 
-  selected.forEach(c=>{
-    html += `
-      <div class="card">
-        <img src="${c.img}" />
-        <h3>${c.name}</h3>
-        <p class="price">$${c.price.toLocaleString()}</p>
+ selected.forEach(c=>{
+  html+=`
+   <div class="card">
 
-        <p>Horsepower</p>
-        <div class="bar"><div class="fill" style="width:${c.hp/10}%"></div></div>
+    <model-viewer
+      src="${c.model}"
+      auto-rotate
+      camera-controls
+      shadow-intensity="1">
+    </model-viewer>
 
-        <p>Speed</p>
-        <div class="bar"><div class="fill" style="width:${c.speed}%"></div></div>
-      </div>
-    `;
-  });
+    <h3>${c.name}</h3>
+    <div class="price">$${c.price.toLocaleString()}</div>
 
-  document.getElementById("cards").innerHTML = html;
+    <p>Horsepower: ${c.hp}</p>
+    <div class="bar"><div class="fill" style="width:${c.hp/10}%"></div></div>
+
+    <p>Speed: ${c.speed}</p>
+    <div class="bar"><div class="fill" style="width:${c.speed}%"></div></div>
+
+   </div>
+  `;
+ });
+
+ document.getElementById("view").innerHTML=html;
 }
 </script>
 
